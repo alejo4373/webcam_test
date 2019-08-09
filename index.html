@@ -9,20 +9,30 @@
 </head>
 
 <body>
-  <video id='video'></video>
-  <canvas id="canvas"></canvas>
-  <br>
-  <button onclick="snap()">Snap</button>
-  <input type="file" accept="image/*">
-  <script>
-    console.log('helo')
+  <div>
+    <h2>Option 1: Accessing web cam</h2>
+    <p>Doesn't appear to work on mobile</p>
+    <video id='video'></video>
+    <button onclick="snap()">Snap</button>
 
+    <div id='snaps'>
+      <h3>Snaps</h3>
+    </div>
+  </div>
+
+  <div>
+    <h2>Option 2: ask for file upload and take photo</h2>
+    <p> Works everywhere </p>
+    <input id="file-input" type="file" accept="image/*">
+    <div id='images'>
+      <h3>Images</h3>
+    </div>
+  </div>
+  <script>
     var video = document.getElementById('video');
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
 
     // Prefer camera resolution nearest to 1280x720.
-    var constraints = { audio: true, video: { width: 1280, height: 720 } };
+    var constraints = { audio: true, video: { width: 720, height: 480 } };
 
     navigator.mediaDevices.getUserMedia(constraints)
       .then(function (mediaStream) {
@@ -33,28 +43,28 @@
       })
       .catch(function (err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
 
-			// navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.oGetUserMedia || navigator.msGetUserMedia;
+    function snap () {
+      let snaps = document.getElementById('snaps')
+      let canvas = document.createElement("canvas");
+      let context = canvas.getContext('2d');
 
-			// if(navigator.getUserMedia){
-			// 	navigator.getUserMedia({video:true}, streamWebCam, throwError);
-			// }
+      canvas.width = video.clientWidth;
+      canvas.height = video.clientHeight;
 
-			// function streamWebCam (stream) {
-      //   console.log(stream)
-			// 	video.src = window.URL.createObjectURL(stream);
-			// 	video.play();
-			// }
+      snaps.appendChild(canvas)
+      context.drawImage(video, 0, 0);
+    }
+      
 
-			// function throwError (e) {
-			// 	alert(e.name);
-			// }
-
-			function snap () {
-				canvas.width = video.clientWidth;
-				canvas.height = video.clientHeight;
-				context.drawImage(video, 0, 0);
-			}
-
+    // For file input
+    const fileInput = document.getElementById('file-input');
+    fileInput.addEventListener('change', (e) => {
+      let images = document.getElementById('images');
+      let image = document.createElement('img')
+      image.src = URL.createObjectURL(e.target.files[0])
+      console.log(e.target.files)
+      images.appendChild(image)
+    });
   </script>
 </body>
 
